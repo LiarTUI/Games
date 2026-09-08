@@ -6,6 +6,7 @@ export default function App() {
     }
     return (
         <div>
+            hello!
             <FlyGames CanvasHeight={canvasSize.CanvasHeight} CanvasWidth={canvasSize.CanvasWidth}></FlyGames>
         </div>
     )
