@@ -10,6 +10,7 @@ type GameStateRoute = {
     CanvasWidth: number
 }
 const gap = 300
+const text = "空格 / 鼠标左键 跳跃"
 export default function FlyGame() {
     const location = useLocation()
     const navigate = useNavigate()
@@ -19,7 +20,8 @@ export default function FlyGame() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const [gameOver, setGameOver] = useState<boolean>(false)
     const [point, setPoint] = useState<number>(0)
-
+    const pointRef = useRef(0)
+    const [maxScore, setMaxScore] = useState(() => Number(localStorage.getItem('maxScore')) ?? 0)
     const gameOverRef = useRef(false)
     const gameId = useRef<number>(0)
     const ballRef = useRef<Ball>(new Ball())
@@ -66,6 +68,9 @@ export default function FlyGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             ballRef.current.draw(ctx)
             wallsRef.current.forEach(wall => wall.draw(ctx))
+            ctx.beginPath()
+            ctx.font = "bold 24px Arial, sans-serif";
+            ctx.fillText(text, canvas.width / 2 - 100, canvas.height / 2)
         }
         return () => {
             isRunning.current = false
@@ -103,7 +108,15 @@ export default function FlyGame() {
         window.addEventListener('keydown', keyHandler)
         return () => window.removeEventListener('keydown', keyHandler)
     }, [])
-
+    const storeMaxScore = () => {
+        let score = Number(localStorage.getItem('maxScore'))
+        if (!score) score = -1
+        console.log(pointRef.current);
+        if (pointRef.current > score) {
+            localStorage.setItem('maxScore', String(point))
+            setMaxScore(pointRef.current)
+        }
+    }
     function draw() {
         if (!isRunning.current) return
         const canvas = canvasRef.current
@@ -162,7 +175,11 @@ export default function FlyGame() {
             const passWall = ball.positionX - ball.radius > wall.positionX + wall.WallWidth
             if (passWall && !wall.scored) {
                 wall.scored = true
-                setPoint((prev) => prev + 1)
+                setPoint((prev) => {
+                    const newVal = prev + 1
+                    pointRef.current = newVal
+                    return newVal
+                })
             }
         }
 
@@ -185,17 +202,19 @@ export default function FlyGame() {
             ctx.textAlign = 'center'
             ctx.fillText('游戏结束', canvas.width / 2, canvas.height / 2 - 50)
             setGameOver(true)
+            storeMaxScore()
             return
         }
 
         gameId.current = requestAnimationFrame(draw)
     }
 
-    const handleReset = () => {
+    const handleReset = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        const canvas = canvasRef.current
         const { w } = sizeRef.current
         if (!w) return
-
-        isRunning.current = false
+        if (!canvas) return
         cancelAnimationFrame(gameId.current)
 
         ballRef.current.reset()
@@ -206,11 +225,18 @@ export default function FlyGame() {
         queue.current = wallsRef.current.map((_, idx) => idx)
 
         gameOverRef.current = false
+        isRunning.current = false
         setGameOver(false)
         setPoint(0)
-
-        isRunning.current = true
-        gameId.current = requestAnimationFrame(draw)
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ballRef.current.draw(ctx)
+            wallsRef.current.forEach(wall => wall.draw(ctx))
+            ctx.beginPath()
+            ctx.font = "bold 24px Arial, sans-serif";
+            ctx.fillText(text, canvas.width / 2 - 100, canvas.height / 2)
+        }
     }
 
     return (
@@ -227,6 +253,7 @@ export default function FlyGame() {
                     </button>
                 </div>
             </div>
+            <h2 style={{ position: 'absolute', right: '50px', top: '50px' }}>{maxScore || 0}：当前最高积分</h2>
         </div>
     )
 }
