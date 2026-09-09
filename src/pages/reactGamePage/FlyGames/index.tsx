@@ -58,28 +58,18 @@ export default function FlyGame() {
         queue.current = wallsRef.current.map((_, idx) => idx)
 
         gameOverRef.current = false
-        isRunning.current = false // 页面初始化：游戏静止，等待用户触发
+        isRunning.current = false
         setGameOver(false)
         setPoint(0)
-
-        // 只做【启动游戏】：游戏静止状态，空格启动raf循环
-        const handleKeyStart = (e: KeyboardEvent) => {
-            if (e.code !== 'Space') return
-            const tag = (e.target as HTMLElement).tagName
-            if (tag === 'INPUT' || tag === 'TEXTAREA') return
-            e.preventDefault()
-
-            if (!isRunning.current && !gameOverRef.current) {
-                isRunning.current = true
-                gameId.current = requestAnimationFrame(draw)
-            }
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ballRef.current.draw(ctx)
+            wallsRef.current.forEach(wall => wall.draw(ctx))
         }
-
-        window.addEventListener('keydown', handleKeyStart)
         return () => {
             isRunning.current = false
             cancelAnimationFrame(gameId.current)
-            window.removeEventListener('keydown', handleKeyStart)
         }
     }, [CanvasWidth, CanvasHeight])
 
@@ -87,28 +77,31 @@ export default function FlyGame() {
     const handleCanvasClick = () => {
         if (gameOverRef.current) return
         if (!isRunning.current) {
-            // 还没开始，点击画布启动游戏循环
             isRunning.current = true
             gameId.current = requestAnimationFrame(draw)
         } else {
-            // 正在游戏，点击跳跃
             ballRef.current.jump()
         }
     }
 
-    // 游戏运行中：空格实现跳跃
     useEffect(() => {
-        const keyJump = (e: KeyboardEvent) => {
+        const keyHandler = (e: KeyboardEvent) => {
             if (e.code !== 'Space') return
             const tag = (e.target as HTMLElement).tagName
             if (tag === 'INPUT' || tag === 'TEXTAREA') return
             e.preventDefault()
-            if (isRunning.current && !gameOverRef.current) {
+
+            if (gameOverRef.current) return
+
+            if (!isRunning.current) {
+                isRunning.current = true
+                gameId.current = requestAnimationFrame(draw)
+            } else {
                 ballRef.current.jump()
             }
         }
-        window.addEventListener('keydown', keyJump)
-        return () => window.removeEventListener('keydown', keyJump)
+        window.addEventListener('keydown', keyHandler)
+        return () => window.removeEventListener('keydown', keyHandler)
     }, [])
 
     function draw() {
