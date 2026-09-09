@@ -72,8 +72,20 @@ export default function FlyGame() {
                 }
             }
         }
+        const handleClick = (e: any) => {
+            const target = e.target as HTMLElement;
+            if (['BUTTON', 'A'].includes(target.tagName)) return;
+            e.preventDefault()
+            if (!gameOverRef.current) {
+                ballRef.current.jump()
+            }
+        }
+        window.addEventListener('click', handleClick)
         window.addEventListener('keydown', keyDown)
-        return () => window.removeEventListener('keydown', keyDown)
+        return () => {
+            window.removeEventListener('keydown', keyDown)
+            window.removeEventListener('click', handleClick)
+        }
     }, [])
 
     function draw() {
@@ -180,8 +192,8 @@ export default function FlyGame() {
     }
 
     return (
-        <div style={{height:'100%'}}>
-            <Button style={{ position:'absolute',left:'50px',top:'50px'}} onClick={() => navigate('/')}>返回主页</Button>
+        <div style={{ height: '100%' }}>
+            <Button style={{ position: 'absolute', left: '50px', top: '50px' }} onClick={() => navigate('/')}>返回主页</Button>
             <div className="container">
                 <h3>积分：{point}</h3>
                 <div className="canvasDiv">
