@@ -19,7 +19,7 @@ export default function FlyGame(props: FlyGamesProps) {
         w: 0,
         h: 0
     })
-
+    const queue = useRef<number[]>([])
     const createWall = (canvasW: number, canvasH: number) => {
         const w = new Wall();
         w.initSize(canvasW, canvasH);
@@ -40,7 +40,7 @@ export default function FlyGame(props: FlyGamesProps) {
 
         ballRef.current.reset()
         wallsRef.current = []
-        for (let i = 0; i < CanvasWidth / 120; i++) {
+        for (let i = 0; i < CanvasWidth / 220; i++) {
             wallsRef.current.push(createWall(CanvasWidth, CanvasHeight))
         }
         for (let i = 1; i < wallsRef.current.length; i++) {
@@ -89,10 +89,26 @@ export default function FlyGame(props: FlyGamesProps) {
             wall.draw(ctx);
         }
 
-        for (const wall of wallsRef.current) {
+        for (let i = 0; i < wallsRef.current.length; i++) {
+            const wall = wallsRef.current[i]
             if (wall.positionX + wall.WallWidth < 0) {
+                const qIdx = queue.current.indexOf(i);
+                if (qIdx !== -1) {
+                    queue.current.splice(qIdx, 1);
+                }
+
                 wall.resetWall(w);
-                wall.positionX = w + 180;
+
+                if (queue.current.length > 0) {
+                    const lastWallIndex = queue.current[queue.current.length - 1];
+                    const lastWall = wallsRef.current[lastWallIndex];
+                    wall.positionX = lastWall.positionX + 220;
+                } else {
+                    wall.positionX = w + 220;
+                }
+
+                // 放回队列尾部
+                queue.current.push(i);
             }
         }
         for (const wall of wallsRef.current) {
