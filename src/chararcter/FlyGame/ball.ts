@@ -13,7 +13,7 @@ export default class ball {
         this.accelerationX = props.accelerationX ?? 5;
         this.accelerationY = props.accelerationY ?? 2;
         this.gravity = props.gravity ?? 0.25;
-        this.radius = props.radius ?? 15;
+        this.radius = props.radius ?? 12;
         this.color = props.color ?? "blue";
         this.jumpPower = props.jumpPower ?? -8;
     }
