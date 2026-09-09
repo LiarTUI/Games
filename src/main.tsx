@@ -1,9 +1,24 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-
+import reactGamePgae from './pages/reactGamePage'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import FlyGame from './pages/reactGamePage/FlyGames/index.tsx';
+const router = createBrowserRouter([
+    {
+        path: '/',
+        Component: App,
+        children: [
+            { path: 'reactGame', Component: reactGamePgae },
+        ]
+    },
+    {
+        path: '/flyGame',
+        Component: FlyGame
+    }
+])
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+    <StrictMode>
+        <RouterProvider router={router} />
+    </StrictMode>,
 )

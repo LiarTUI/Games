@@ -1,14 +1,17 @@
 import './index.less'
-import Ball from '../../chararcter/FlyGame/ball'
-import Wall from '../../chararcter/FlyGame/wall'
+import Ball from '../../../chararcter/FlyGame/ball'
+import Wall from '../../../chararcter/FlyGame/wall'
 import { useEffect, useRef, useState } from 'react'
-import type { FlyGamesProps } from './type'
-
-export default function FlyGame(props: FlyGamesProps) {
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Button } from 'antd'
+export default function FlyGame() {
+    const location = useLocation()
+    const navigate = useNavigate()
+    const state = location.state
     const {
         CanvasHeight,
         CanvasWidth
-    } = props
+    } = state
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const [gameOver, setGameOver] = useState<boolean>(false)
     const [point, setPoint] = useState<number>(0)
@@ -126,11 +129,10 @@ export default function FlyGame(props: FlyGamesProps) {
         }
         for (const wall of wallsRef.current) {
             const passWall = ball.positionX - ball.radius > wall.positionX + wall.WallWidth;
-            console.log(passWall);
             if (passWall && !wall.scored) {
                 wall.scored = true;
                 setPoint(prev => prev + 1);
-                
+
             }
         }
         // 地面碰撞
@@ -149,7 +151,7 @@ export default function FlyGame(props: FlyGamesProps) {
             ctx.font = "36px sans-serif";
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
-            ctx.fillText("游戏结束", canvas.width / 2, canvas.height / 2);
+            ctx.fillText("游戏结束", canvas.width / 2, canvas.height / 2 - 50);
             setGameOver(true)
             return;
         }
@@ -178,13 +180,17 @@ export default function FlyGame(props: FlyGamesProps) {
     }
 
     return (
-        <div className="container">
-            <h3>积分：{point}</h3>
-            <div className="canvasDiv">
-                <canvas ref={canvasRef}></canvas>
-                <button onClick={handleReset} style={{ display: gameOver ? 'block' : 'none' }}>重新开始</button>
+        <div style={{height:'100%'}}>
+            <Button style={{ position:'absolute',left:'50px',top:'50px'}} onClick={() => navigate('/')}>返回主页</Button>
+            <div className="container">
+                <h3>积分：{point}</h3>
+                <div className="canvasDiv">
+                    <canvas ref={canvasRef}></canvas>
+                    <button onClick={handleReset} style={{ display: gameOver ? 'block' : 'none' }}>重新开始</button>
+                </div>
             </div>
         </div>
+
 
     );
 }

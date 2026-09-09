@@ -1,10 +1,25 @@
+#root {
+    height: 100%;
+    /* ✅关键，让root占满视口 */
+}
+
+html,
+body {
+    height: 100%;
+}
+
 .container {
     height: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
+
+    h3 {
+        height: 100px;
+        line-height: 100px;
+    }
+
     .canvasDiv {
-        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
