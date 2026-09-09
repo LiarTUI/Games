@@ -1,7 +1,7 @@
 import './index.less'
 import Ball from '../../chararcter/FlyGame/ball'
 import Wall from '../../chararcter/FlyGame/wall'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FlyGamesProps } from './type'
 
 export default function FlyGame(props: FlyGamesProps) {
@@ -10,6 +10,8 @@ export default function FlyGame(props: FlyGamesProps) {
         CanvasWidth
     } = props
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
+    const [gameOver, setGameOver] = useState<boolean>(false)
+    const [point, setPoint] = useState<number>(0)
     const gameOverRef = useRef(false)
     const gameId = useRef<number>(0)
     const ballRef = useRef<Ball>(new Ball())
@@ -122,6 +124,15 @@ export default function FlyGame(props: FlyGamesProps) {
                 }
             }
         }
+        for (const wall of wallsRef.current) {
+            const passWall = ball.positionX - ball.radius > wall.positionX + wall.WallWidth;
+            console.log(passWall);
+            if (passWall && !wall.scored) {
+                wall.scored = true;
+                setPoint(prev => prev + 1);
+                
+            }
+        }
         // 地面碰撞
         if (ball.positionY + ball.radius >= canvas.height) {
             ball.positionY = canvas.height - ball.radius
@@ -139,6 +150,7 @@ export default function FlyGame(props: FlyGamesProps) {
             ctx.fillStyle = "red";
             ctx.textAlign = "center";
             ctx.fillText("游戏结束", canvas.width / 2, canvas.height / 2);
+            setGameOver(true)
             return;
         }
         gameId.current = requestAnimationFrame(draw)
@@ -155,8 +167,10 @@ export default function FlyGame(props: FlyGamesProps) {
         for (let i = 1; i < wallsRef.current.length; i++) {
             wallsRef.current[i].positionX = wallsRef.current[i - 1].positionX + 220;
         }
+        queue.current = wallsRef.current.map((_, idx) => idx);
         gameOverRef.current = false
-
+        setGameOver(false)
+        setPoint(0)
         isRunning.current = true;
         gameId.current = requestAnimationFrame(() => {
             requestAnimationFrame(draw);
@@ -164,9 +178,13 @@ export default function FlyGame(props: FlyGamesProps) {
     }
 
     return (
-        <div>
-            <canvas ref={canvasRef}></canvas>
-            <button onClick={handleReset}>重新开始</button>
+        <div className="container">
+            <h3>积分：{point}</h3>
+            <div className="canvasDiv">
+                <canvas ref={canvasRef}></canvas>
+                <button onClick={handleReset} style={{ display: gameOver ? 'block' : 'none' }}>重新开始</button>
+            </div>
         </div>
+
     );
 }
