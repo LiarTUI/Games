@@ -9,17 +9,17 @@ export default class ball {
     jumpPower: number;
     constructor(props: Record<string, any> = {}) {
         this.positionX = props.positionX ?? 100;
-        this.positionY = props.positionY ?? 100;
+        this.positionY = props.positionY ?? 300;
         this.accelerationX = props.accelerationX ?? 5;
-        this.accelerationY = props.accelerationY ?? 2;
-        this.gravity = props.gravity ?? 0.25;
+        this.accelerationY = props.accelerationY ?? 5;
+        this.gravity = props.gravity ?? 0.10;
         this.radius = props.radius ?? 12;
-        this.color = props.color ?? "blue";
-        this.jumpPower = props.jumpPower ?? -8;
+        this.color = props.color ?? "pink";
+        this.jumpPower = props.jumpPower ?? -3.7;
     }
     reset() {
         this.positionX = 100
-        this.positionY = 100
+        this.positionY = 300
         this.accelerationX = 5
         this.accelerationY = 2
     };

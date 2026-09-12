@@ -10,7 +10,7 @@ export default class wall {
     constructor(props: Record<string, any> = {}) {
         this.scored = false;
         this.WallWidth = props.WallWidth ?? 10;
-        this.speed = props.speed ?? 3;
+        this.speed = props.speed ?? 2.5;
         this.space = props.space ?? 150;
         this.upWallHeight = props.upWallHeight ?? 0;
         this.downWallHeight = props.downWallHeight ?? 0;

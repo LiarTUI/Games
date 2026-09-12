@@ -11,6 +11,7 @@ type GameStateRoute = {
 }
 const gap = 300
 const text = "空格 / 鼠标左键 跳跃"
+
 export default function FlyGame() {
     const location = useLocation()
     const navigate = useNavigate()
@@ -21,6 +22,7 @@ export default function FlyGame() {
     const [gameOver, setGameOver] = useState<boolean>(false)
     const [point, setPoint] = useState<number>(0)
     const pointRef = useRef(0)
+    const time = useRef<number>(0)
     const [maxScore, setMaxScore] = useState(() => Number(localStorage.getItem('maxScore')) ?? 0)
     const gameOverRef = useRef(false)
     const gameId = useRef<number>(0)
@@ -128,8 +130,15 @@ export default function FlyGame() {
         const ball = ballRef.current
 
         ball.draw(ctx)
-        ball.accelerationY += ball.gravity
-        ball.positionY += ball.accelerationY
+        if (time.current === 0) {
+            ball.jump()
+            ball.positionY += ball.accelerationY
+            time.current = 1
+        } else {
+            ball.accelerationY += ball.gravity
+            ball.positionY += ball.accelerationY
+        }
+
 
         for (const wall of wallsRef.current) {
             wall.positionX -= wall.speed
@@ -229,13 +238,14 @@ export default function FlyGame() {
         setGameOver(false)
         setPoint(0)
         const ctx = canvas.getContext('2d')
+        time.current = 0
         if (ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             ballRef.current.draw(ctx)
             wallsRef.current.forEach(wall => wall.draw(ctx))
             ctx.beginPath()
             ctx.font = "bold 24px Arial, sans-serif";
-            ctx.fillText(text, canvas.width / 2 - 100, canvas.height / 2)
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2)
         }
     }
 
