@@ -12,9 +12,10 @@ export default function Index() {
         label: '笨球先飞',
         game: FlyGames,
         img: FlyGameImg,
+        address: '/flyGame'
     }]
-    const handlePlayThisGame = (props: any) => {
-        navigate('/flyGame', {
+    const handlePlayThisGame = (address: string, props: any) => {
+        navigate(address, {
             state: props
         })
     }
@@ -27,7 +28,7 @@ export default function Index() {
                         <div
                             key={item.label}
                             className="game"
-                            onClick={() => handlePlayThisGame(item.props)}
+                            onClick={() => handlePlayThisGame(item.address, item.props)}
                         >
                             <Img />
                             <span style={{ fontFamily: 'SimHei' }}>{item.label}</span>

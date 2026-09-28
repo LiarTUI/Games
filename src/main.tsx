@@ -4,6 +4,7 @@ import App from './App.tsx'
 import reactGamePgae from './pages/reactGamePage'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import FlyGame from './pages/reactGamePage/FlyGames/index.tsx';
+import Go from './pages/IQGamePage/Go/index.tsx';
 const router = createBrowserRouter([
     {
         path: '/',
@@ -15,7 +16,11 @@ const router = createBrowserRouter([
     {
         path: '/flyGame',
         Component: FlyGame
-    }
+    },
+    {
+        path: '/Go',
+        Component: Go
+    },
 ])
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
